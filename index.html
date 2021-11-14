@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>
+            HTTP Request Documentation
+        </title>
+        <link href="./resources/style.css" type="text/css" rel="stylesheet">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    
+    <header class="header">
+        <h1>
+                 Using XMLHttpRequest
+        </h1>
+        <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Using_XMLHttpRequest#monitoring_progress">
+            Read the full documentation here
+        </a>
+    </header>
+
+    <body>
+        <main id="main-doc">
+                <!-- Side navigation bar to lead to contents-->
+
+            <aside>
+                <nav id="navbar">
+                    <header>
+                        <h1>Using XMLHttpRequest</h1>
+                    </header>
+
+
+                    <div class="table">
+
+                    <a href="#Introduction" class="nav-link">
+                        <h3>Introduction</h3> </a>
+                    <hr>
+
+                    <a href="#Types_of_requests" class="nav-link"><h3>
+                        <h3>Types of requests</h3>
+                    </h3> </a>
+                    <hr>
+
+                    <a href="#Handling_responses" class="nav-link"><h3>
+                        Handling responses
+                    </h3> </a>
+                    <hr>
+
+                    <a href="#Handling_binary_data" class="nav-link"> <h3>
+                        Handling binary data
+                    </h3></a>
+                    <hr>
+
+                    <a href="#Monitoring_progress" class="nav-link"> <h3>
+                        Monitoring progress
+                    </h3></a>
+                    <hr>
+                    <a href="#Submitting_forms" class="nav-link"><h3>
+                        Submitting forms </h3> </a>
+                        <hr>
+                        <a href="#Reference" class="nav-link"><h3>
+                            Reference
+                        </h3></a>
+                    </div>
+                </nav>
+            </aside>
+
+
+
+
+
+                <!-- Main Content Section-->
+
+        <section class="content">
+
+            <section id="Introduction" class="main-section">
+                <header>
+                    <h2>Introduction</h2>
+                </header>
+                <p> In this guide, we'll take a look at how to use XMLHttpRequest to issue HTTP requests 
+                    in order to exchange data between the web site and a server.
+
+                    Examples of both common and more obscure use cases for XMLHttpRequest are included.
+                    
+                    To send an HTTP request, create an XMLHttpRequest object, open a URL,
+                     and send the request. After the transaction completes, the object will contain useful 
+                     information such as the response body and the HTTP status of the result.
+                     <br> 
+                    <pre>
+                        <code> 
+                            function reqListener () {
+                                console.log(this.responseText);
+                              }
+                              
+                              var oReq = new XMLHttpRequest();
+                              oReq.addEventListener("load", reqListener);
+                              oReq.open("GET", "http://www.example.org/example.txt");
+                              oReq.send();
+                              
+                         </code>
+                 </pre>
+                </p>
+            </section>
+
+
+            <section id="Types_of_requests" class="main-section">
+                <header>
+                    <h2>Types of requests</h2>
+                </header>
+                <p>
+                    A request made via XMLHttpRequest can fetch the data in one of two ways, 
+                    asynchronously or synchronously. The type of request is dictated by the optional async argument 
+                    (the third argument) that is set on the XMLHttpRequest.open() method. If this argument is true or not specified,
+                     the XMLHttpRequest is processed asynchronously, otherwise the process is handled synchronously
+                     Do not use synchronous requests outside Web Workers.
+                     <br>
+                    <ul>
+                        <br>
+                        <li>
+                        <strong>Note:  </strong> Starting with Gecko 30.0 (Firefox 30.0 / Thunderbird 30.0 / SeaMonkey 2.27), synchronous requests 
+                            on the main thread have been deprecated due to the negative effects to the user experience
+                        </li>
+                        <br>
+                        <li>
+                        <strong>Note:  </strong> The constructor function XMLHttpRequest isn't limited to only XML documents. It starts with "XML" 
+                            because when it was created the main format that was originally used for Asynchronous Data Exchange was XML.
+                        </li>
+                    </ul>
+
+                </p>
+            </section>
+
+
+            <section id="Handling_responses" class="main-section">
+                <header>
+                    <h2>
+                        Handling responses
+                    </h2>
+                </header>
+                <p>
+                    There are several types of response attributes defined by the living standard specification for the 
+                    XMLHttpRequest() constructor. These tell the client making the XMLHttpRequest important information
+                     about the status of the response. 
+                     <br>Some cases where dealing with non-text response types may involve 
+                     some manipulation and analysis are outlined in the following sections.
+                     <br>
+                     If you use XMLHttpRequest to get the content of a remote HTML webpage, the responseText property is
+                      a string containing the raw HTML. This could prove difficult to manipulate and analyze. 
+                      <br>
+                      There are three primary ways to analyze and parse this raw HTML string:
+                    
+                    <ul>
+                        <br>
+                        <li>
+                            Use the XMLHttpRequest.responseXML property as covered in the article HTML in XMLHttpRequest. 
+                        </li>
+                        <br>
+                        <li>
+                            Inject the content into the body of a document fragment via fragment.body.innerHTML and 
+                            traverse the DOM of the fragment. 
+                        </li>
+                        <br>
+                        <li>
+                           <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp">RegExp </a> 
+                            can be used if you always know the content of the HTML responseText beforehand.
+                             You might want to remove line breaks, if you use RegExp to scan with regard to linebreaks. 
+                             However, this method is a "last resort" since if the HTML code changes slightly, the method 
+                             will likely fail. 
+                        </li>
+                    </ul>
+                </p>
+            </section>
+
+
+            <section id="Handling_binary_data" class="main-section">
+                <header>
+                    <h2>
+                        Handling binary data
+                    </h2>
+                </header>
+                <p>
+                    However, more modern techniques are available, since the responseType attribute now supports
+                     a number of additional content types, which makes sending and receiving binary data much easier.
+                    For example, consider this snippet, which uses the responseType of "arraybuffer" to fetch the remote
+                     content into a ArrayBuffer object, which stores the raw binary data
+                   
+                    <br>
+                    <pre>
+                        <code> 
+                            var oReq = new XMLHttpRequest();
+                            oReq.onload = function(e) {
+                            var arraybuffer = oReq.response; // not responseText
+                            /* ... */
+                            }
+                            oReq.open("GET", url);
+                            oReq.responseType = "arraybuffer";
+                            oReq.send();
+
+                         </code>
+                    </pre>
+                   <p> For more examples check out the <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Sending_and_Receiving_Binary_Data">
+                       Sending and Receiving Binary Data page</a></p>
+                </p>
+            </section>
+
+
+            <section id="Monitoring_progress" class="main-section">
+                <header>
+                    <h2>Monitoring progress</h2>
+                </header>
+                <p> XMLHttpRequest provides the ability to listen to various events that can occur while the request is 
+                    being processed. This includes periodic progress notifications, error notifications, and so forth.
+                    <br>
+                    Support for DOM progress event monitoring of XMLHttpRequest transfers follows the specification
+                     for progress events: these events implement the ProgressEvent interface. 
+                     <br>The actual events you can monitor to determine the state of an ongoing transfer are: 
+                      <br>                   
+                        <strong><a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/progress_event">progress</a></strong>
+                        The amount of data that has been retrieved has changed.
+                        <br>
+
+                        <strong><a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/load_event">load</a></strong>
+                        The transfer is complete; all data is now in the response
+
+                    <pre>
+                        <code> 
+                            var oReq = new XMLHttpRequest();
+                                oReq.addEventListener("progress", updateProgress);
+                                oReq.addEventListener("load", transferComplete);
+                                oReq.addEventListener("error", transferFailed);
+                                oReq.addEventListener("abort", transferCanceled);
+
+                                oReq.open();
+
+                                // ...
+
+                                // progress on transfers from the server to the client (downloads)
+                                function updateProgress (oEvent) {
+                                if (oEvent.lengthComputable) {
+                                    var percentComplete = oEvent.loaded / oEvent.total * 100;
+                                    // ...
+                                } else {
+                                    // Unable to compute progress 
+                                    //information since the total size is unknown
+                                }
+                                }
+
+                                function transferComplete(evt) {
+                                console.log("The transfer is complete.");
+                                }
+
+                                function transferFailed(evt) {
+                                console.log("An error occurred while transferring the file.");
+                                }
+
+                                function transferCanceled(evt) {
+                                console.log("The transfer has been canceled by the user.");
+                                }
+
+                          </code>
+                    </pre>
+                    
+                    <ul>
+                        <li>
+                           <strong> Note: </strong> You need to add the event listeners before calling open() on the request.
+                             Otherwise the progress events will not fire.
+                        </li>
+                    </ul>
+                    <pre>
+                        <code>
+                            var oReq = new XMLHttpRequest();
+
+                            oReq.upload.addEventListener("progress", updateProgress);
+                            oReq.upload.addEventListener("load", transferComplete);
+                            oReq.upload.addEventListener("error", transferFailed);
+                            oReq.upload.addEventListener("abort", transferCanceled);
+
+                            oReq.open();
+
+                        </code>
+                    </pre>
+                </p>
+            </section>
+
+
+            <section id="Submitting_forms" class="main-section">
+                <header>
+                    <h2>Submitting forms</h2>
+                </header>
+                <p>
+                   Instances of XMLHttpRequest can be used to submit forms in two ways:
+                   <br>
+                   <ul>
+                       <li>
+                        Using only AJAX
+                       </li>
+
+                       <br>
+                       <li>
+                        Using the FormData API
+                       </li>
+                       </ul>
+                       <br>
+                      <p> A brief introduction to the submit methods
+
+                       <br>
+
+                        An html <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form"> Form
+
+                        </a>can be sent in four ways:</p>
+                    <ul>
+                        <li>Using the POST method and setting the enctype attribute to application/x-www-form-urlencoded (default); </li>
+                        <li>Using the POST method and setting the enctype attribute to text/plain; </li>
+                        <li>Using the POST method and setting the enctype attribute to multipart/form-data; </li>
+                        <li>Using the GET method (in this case the enctype attribute will be ignored).</li>
+                    </ul>
+
+                    <br>
+                    <ul>
+                         <li>
+                            Method: POST; Encoding type: text/plain: 
+                         </li>
+                    </ul>
+                    <pre>
+                        <code>
+                            Content-Type: text/plain
+
+                            foo=bar
+                            baz=The first line.
+                            The second line.
+                        </code>
+                    </pre>
+                </p>
+            </section>
+
+
+            <section id="Reference" class="main-section">
+                <header>
+                    <h2>Reference</h2>
+                </header>
+                <p>
+                    All the documentation on this page was sourced from <strong>MDN</strong>
+                    <br>
+                     <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Using_XMLHttpRequest#monitoring_progress"> Read More on Using XMLHttpRequest here</a>
+                </p>
+            </section>
+
+
+        </section>
+     </main>
+    </body>
+ </html>
+        
+
+        
